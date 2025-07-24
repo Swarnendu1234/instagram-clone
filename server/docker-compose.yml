@@ -1,0 +1,26 @@
+services:
+  app:
+    build: .
+    container_name: socialmedia_app
+    expose:
+      - "5000"
+    env_file:
+      - .env
+    networks:
+      - shared-net
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.socialmedia.rule=Host(`api.ahmadfiqrioemry.com`)"
+      - "traefik.http.services.socialmedia.loadbalancer.server.port=5000"
+      - "traefik.http.routers.socialmedia.entrypoints=websecure"
+      - "traefik.http.routers.socialmedia.tls.certresolver=letsencrypt"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+
+networks:
+  shared-net:
+    external: true
